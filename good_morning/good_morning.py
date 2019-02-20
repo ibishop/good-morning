@@ -277,7 +277,7 @@ class FinancialsDownloader(object):
         """
         self._table_prefix = table_prefix
 
-    def download(self, ticker, conn = None):
+    def download(self, ticker, conn = None, region='usa'):
         u"""Downloads and returns a dictionary containing pandas.DataFrames
         representing the financials (i.e. income statement, balance sheet,
         cash flow) for the given Morningstar ticker. If the MySQL connection
@@ -304,7 +304,7 @@ class FinancialsDownloader(object):
                 (u'is', u'income_statement'),
                 (u'bs', u'balance_sheet'),
                 (u'cf', u'cash_flow')]:
-            frame = self._download(ticker, report_type)
+            frame = self._download(ticker, report_type,region='usa')
             result[table_name] = frame
             if conn:
                 self._upload_frame(
@@ -316,7 +316,7 @@ class FinancialsDownloader(object):
         result[u'currency'] = self._currency
         return result
 
-    def _download(self, ticker, report_type):
+    def _download(self, ticker, report_type,region):
         u"""Downloads and returns a pandas.DataFrame corresponding to the
         given Morningstar ticker and the given type of the report.
 
@@ -327,7 +327,7 @@ class FinancialsDownloader(object):
         """
         url = (r'http://financials.morningstar.com/ajax/' +
                r'ReportProcess4HtmlAjax.html?&t=' + ticker +
-               r'&region=usa&culture=en-US&cur=USD' +
+               r'&region=' + region + '&culture=en-US&cur=USD' +
                r'&reportType=' + report_type + r'&period=12' +
                r'&dataType=A&order=asc&columnYear=5&rounding=3&view=raw')
         with urllib.request.urlopen(url) as response:
